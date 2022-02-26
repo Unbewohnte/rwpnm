@@ -10,10 +10,13 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include<iostream>
-#include<vector>
-#include<fstream>
+#ifndef RWPNM
+#define RWPNM
 
+#include <vector>
+#include <fstream>
+
+namespace pnm {
 
 class Color {
 public:
@@ -98,7 +101,6 @@ public:
     void save(std::string path) {
         // check if there are less/more pixels than needed
         if (m_pixel_data.size() > (m_width * m_height) || m_pixel_data.size() < (m_width * m_height)) {
-            std::cout << m_pixel_data.size();
             throw std::runtime_error("Invalid amount of pixels. There must be width*height pixels");
         }
 
@@ -149,29 +151,10 @@ public:
             if (data.length() == 0) {
                 break;
             }
-            std::cout << data;
         }
     }
 };
 
-int main() {
-    try {
-        PPM_writer ppm_image(800, 800);
-        
-        uint8_t cc = 0;
-        for (uint32_t y = 0; y < 800; y++) {
-            for (uint32_t x = 0; x < 800; x++) {
-                ppm_image.put_pixel(x, y, RGB(cc, cc, cc));
-
-                cc++;
-            }
-            cc--;
-        }
-        ppm_image.save("image.ppm");
-
-    } catch(const std::exception& e) {
-        std::cout << "[ERROR] " << e.what() << "\n";
-    }
-
-    return 0;
 }
+
+#endif
