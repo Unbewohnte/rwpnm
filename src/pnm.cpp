@@ -29,6 +29,8 @@ class Color {
 public:
     Color() {}
     ~Color() {}
+
+    bool operator==(const Color& other);
 };
 
 class RGB : public Color {
@@ -127,7 +129,7 @@ public:
         // check for magic number
         std::string entity;
         ppm_image_file >> entity;
-        if (entity != "P6") {
+        if (entity != m_MAGIC_NUMBER) {
             throw std::runtime_error("Does not have a magic number");
         }
 
@@ -178,7 +180,7 @@ public:
         // write to the file on the disk and close it
 
         // magic number
-        ppm_image_file << "P6";
+        ppm_image_file << m_MAGIC_NUMBER;
 
         // newline
         ppm_image_file << "\n";
