@@ -10,8 +10,15 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef RWPNM
 #define RWPNM
+
+/*
+RWPNM v0.1.0
+
+A drop-in library to work with PNM images
+*/
 
 #include <vector>
 #include <fstream>
@@ -36,6 +43,15 @@ public:
     uint8_t R;
     uint8_t G;
     uint8_t B;
+
+
+    bool operator==(const RGB& other) {
+        if (R != other.R || G != other.G || B != other.B) {
+            return false;
+        }
+
+        return true;
+    }
 };
 
 class Grayscale : public Color {
@@ -49,7 +65,7 @@ public:
 };
 
 
-// PPM file format reader/writer base class
+// PPM image file format reader/writer
 class PPM {
 protected:
     // PPM colored image magic number
@@ -71,37 +87,86 @@ protected:
     }
 
 public:
-    PPM() {}
+    PPM() {
+        // set defaults (these can and will be changed when reading/coloring the image)
+        m_width = 0;
+        m_height = 0;
+        m_max_color = 255;
+    }
     ~PPM() {}
 
     // Color a pixel at coordinates (x, y)
     void put_pixel(uint32_t x, uint32_t y, RGB color) {
         uint64_t i = index_at(x, y);
+        if (i >= m_pixel_data.size()) {
+            // the image is not big enough !
+            m_pixel_data.resize(i + 1);
 
-        if (i >= (m_width * m_height))  {
-            throw std::runtime_error("Pixel coordinates are out of bounds");
+            if (x > m_width) {
+                m_width = x + 1;
+            }
+
+            if (y > m_height) {
+                m_height = y + 1;
+            }
         }
+        
 
         m_pixel_data.at(i) = color;
     }
-};
 
-// PPM file format image writer class
-class PPM_writer : public PPM {
-public:
-    PPM_writer(uint32_t width, uint32_t height, uint16_t maxcolor = 255) {
-        m_width = width;
-        m_height = height;
-        m_max_color = maxcolor;
-        m_pixel_data.resize(width*height);
+    // Read PPM image from disk
+    void read(std::string path) {
+        // try to open file
+        std::ifstream ppm_image_file;
+        ppm_image_file.open(path, std::ios::in);
+        if (!ppm_image_file.is_open()) {
+            throw std::runtime_error("Could not open an image");
+        }
+
+        // check for magic number
+        std::string entity;
+        ppm_image_file >> entity;
+        if (entity != "P6") {
+            throw std::runtime_error("Does not have a magic number");
+        }
+
+        // width, height, max color
+        ppm_image_file >> entity;
+        m_width = std::stoi(entity);
+
+        ppm_image_file >> entity;
+        m_height = std::stoi(entity);
+
+        ppm_image_file >> entity;
+        m_max_color = std::stoi(entity);
+
+        m_pixel_data.resize(m_width * m_height);
+
+        // skip one byte
+        char one[1];
+        ppm_image_file.read(one, 1);
+
+        // retrieve pixels
+        char pixel_color[3];
+        for (uint64_t i = 0; i < m_width * m_height; i++) {
+            ppm_image_file.read(pixel_color, 3);            
+            RGB color(pixel_color[0], pixel_color[1], pixel_color[2]);
+            if (color == RGB(255, 0, 0)) {
+                break;
+            }
+            m_pixel_data.at(i) = color;
+        }
+
+
+        ppm_image_file.close();
     }
-    ~PPM_writer() {}
 
     // Write PPM image to disk
     void save(std::string path) {
-        // check if there are less/more pixels than needed
-        if (m_pixel_data.size() > (m_width * m_height) || m_pixel_data.size() < (m_width * m_height)) {
-            throw std::runtime_error("Invalid amount of pixels. There must be width*height pixels");
+        // check if there are pixels at all
+        if (m_pixel_data.size() == 0) {
+            throw std::runtime_error("No pixels were assigned");
         }
 
         // try to create file
@@ -127,31 +192,6 @@ public:
         }
 
         ppm_image_file.close();
-    }
-};
-
-
-class PPM_reader : public PPM {
-public:
-    PPM_reader() {}
-    ~PPM_reader() {}
-
-    // Read PPM image from disk
-    void read(std::string path) {
-        // try to open file
-        std::ifstream ppm_image_file;
-        ppm_image_file.open(path, std::ios::in);
-        if (!ppm_image_file.is_open()) {
-            throw std::runtime_error("Could not open an image");
-        }
-
-        while(true) {
-            std::string data;
-            ppm_image_file >> data;
-            if (data.length() == 0) {
-                break;
-            }
-        }
     }
 };
 
