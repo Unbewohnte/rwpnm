@@ -54,11 +54,57 @@ void no_pixel_assign() {
     } catch(const std::exception& e) {}
 }
 
+void write_comment() {
+    try {
+        pnm::PPM image;
+        
+        const uint32_t width = 512;
+        const uint32_t height = 512;
+
+        for (uint32_t y = 0; y < height; y++) {
+            for (uint32_t x = 0; x < width; x++) {                
+                image.put_pixel(x, y, pnm::RGB(x / 2, y / 2, x / 2 + y / 2));
+            }
+        }
+
+        image.add_comment("comment 1");
+        image.add_comment("comment 2");
+        image.add_comment("comment \n\n\n");
+
+        image.save("result_image.ppm");
+
+    } catch(const std::exception& e) {
+        std::string error_message("write_comment:", e.what());
+        throw std::runtime_error(error_message);
+    }
+}
+
+void read_comment() {
+    try {
+        write_comment();
+    
+        pnm::PPM image;
+        image.read("result_image.ppm");
+
+        std::vector<std::string> comments = image.get_comments();
+
+        if (comments.size() == 0) {
+            throw std::runtime_error("No comments found, though there should be");
+        }
+        
+    } catch(const std::exception& e) {
+        std::string error_message("read_comment:", e.what());
+        throw std::runtime_error(error_message);
+    }
+}
+
 int main() {
     try {
         make_test_img();
         green_rectangle_on_top_of_existing_image();
         no_pixel_assign();
+        write_comment();
+        read_comment();
 
     } catch(const std::exception& e) {
         std::cout << "[ERROR] " << e.what() << "\n";

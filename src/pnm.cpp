@@ -70,8 +70,9 @@ public:
 // PPM image file format reader/writer
 class PPM {
 protected:
-    // PPM colored image magic number
+    // binary PPM format constants
     const std::string m_MAGIC_NUMBER = "P6";
+    const char m_COMMENT_CHAR = '#';
 
     // image width and height
     uint32_t m_width;
@@ -79,6 +80,9 @@ protected:
 
     // maximum value for all color channels
     uint16_t m_max_color;
+
+    // stored comments
+    std::vector<std::string> m_comments;
 
     // actual pixel data
     std::vector<RGB> m_pixel_data;
@@ -117,6 +121,16 @@ public:
         m_pixel_data.at(i) = color;
     }
 
+    // Add comment line to the image
+    void add_comment(std::string comment) {
+        m_comments.push_back(comment);
+    }
+
+    // Return all captured comments of an image
+    std::vector<std::string> get_comments() {
+        return m_comments;
+    }
+
     // Read PPM image from disk
     void read(std::string path) {
         // try to open file
@@ -133,21 +147,49 @@ public:
             throw std::runtime_error("Does not have a magic number");
         }
 
-        // width, height, max color
-        ppm_image_file >> entity;
-        m_width = std::stoi(entity);
-
-        ppm_image_file >> entity;
-        m_height = std::stoi(entity);
-
-        ppm_image_file >> entity;
-        m_max_color = std::stoi(entity);
-
+        // width, height, max color while ignoring comments
+        uint8_t captured = 0;
+        while(captured < 3) {
+            ppm_image_file >> entity;
+            if (entity[0] == m_COMMENT_CHAR) {
+                // this is a comment, skip this line
+                getline(ppm_image_file, entity);
+                m_comments.push_back(entity);
+                continue;
+            }
+            
+            switch(captured) {
+                case 0:
+                    // width
+                    m_width = std::stoi(entity);
+                    break;
+                
+                case 1:
+                    // height
+                    m_height = std::stoi(entity);
+                    break;
+                
+                case 2:
+                    // max color
+                    m_max_color = std::stoi(entity);
+                    break;
+            }
+            captured++;
+        }
         m_pixel_data.resize(m_width * m_height);
 
-        // skip one byte
-        char one[1];
-        ppm_image_file.read(one, 1);
+        while(true) {
+            // skip one final byte...
+            char one[1];
+            ppm_image_file.read(one, 1);
+            if (one[0] == m_COMMENT_CHAR) {
+                // ah, comment again...
+                getline(ppm_image_file, entity);
+                m_comments.push_back(entity);
+            } else {
+                break;
+            }
+        }
 
         // retrieve pixels
         char pixel_color[3];
@@ -184,6 +226,11 @@ public:
 
         // newline
         ppm_image_file << "\n";
+
+        // comments
+        for (const std::string& comment : m_comments) {
+            ppm_image_file << m_COMMENT_CHAR << comment << "\n";
+        }
 
         // width, height, max color value
         ppm_image_file << m_width << " " << m_height << " " << m_max_color << "\n";
