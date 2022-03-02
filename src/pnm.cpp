@@ -15,7 +15,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 #define RWPNM
 
 /*
-RWPNM v0.1.0
+RWPNM v0.2
 
 A drop-in library to work with PNM images
 */

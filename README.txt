@@ -10,9 +10,12 @@ or
 2) Create a dynamic library and use it instead.
 
 Version:
-v0.1.0
+v0.2
 
 Status:
+v0.2
+PPM comments writing/reading support
+
 v0.1.0
 PPM reading, writing
 
