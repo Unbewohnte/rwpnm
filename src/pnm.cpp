@@ -15,7 +15,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 #define RWPNM
 
 /*
-RWPNM v0.2
+RWPNM v0.3
 
 A drop-in library to work with PNM images
 */
@@ -23,17 +23,9 @@ A drop-in library to work with PNM images
 #include <vector>
 #include <fstream>
 
-namespace pnm {
+namespace pnm {;
 
-class Color {
-public:
-    Color() {}
-    ~Color() {}
-
-    bool operator==(const Color& other);
-};
-
-class RGB : public Color {
+class RGB {
 public:
     RGB(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0) {
         R = r;
@@ -48,15 +40,15 @@ public:
 
 
     bool operator==(const RGB& other) {
-        if (R != other.R || G != other.G || B != other.B) {
-            return false;
+        if (R == other.R || G == other.G || B == other.B) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 };
 
-class Grayscale : public Color {
+class Grayscale {
 public:
     Grayscale(uint8_t value = 0) {
         intensity = value;
@@ -64,6 +56,14 @@ public:
     ~Grayscale() {}
 
     uint8_t intensity;
+
+    bool operator==(const Grayscale& other) {
+        if (intensity == other.intensity) {
+            return true;
+        }
+
+        return false;
+    }
 };
 
 
@@ -126,6 +126,14 @@ public:
         m_comments.push_back(comment);
     }
 
+    void remove_last_comment() {
+        m_comments.pop_back();
+    }
+
+    void remove_all_comments() {
+        m_comments.clear();
+    }
+
     // Return all captured comments of an image
     std::vector<std::string> get_comments() {
         return m_comments;
@@ -152,9 +160,11 @@ public:
         while(captured < 3) {
             ppm_image_file >> entity;
             if (entity[0] == m_COMMENT_CHAR) {
-                // this is a comment, skip this line
+                // this is a comment
+                std::string comment = entity;
                 getline(ppm_image_file, entity);
-                m_comments.push_back(entity);
+                comment += entity;
+                m_comments.push_back(comment);
                 continue;
             }
             

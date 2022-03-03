@@ -69,12 +69,28 @@ void write_comment() {
 
         image.add_comment("comment 1");
         image.add_comment("comment 2");
-        image.add_comment("comment \n\n\n");
+        image.add_comment("comment 3\n\n\n");
 
         image.save("result_image.ppm");
 
     } catch(const std::exception& e) {
         std::string error_message("write_comment:", e.what());
+        throw std::runtime_error(error_message);
+    }
+}
+
+void remove_comments() {
+    try {
+        pnm::PPM image;
+        image.read("result_image.ppm");
+        
+        image.remove_last_comment();
+        image.remove_all_comments();
+        
+        image.save("result_image.ppm");
+
+    } catch(const std::exception& e) {
+        std::string error_message("remove_comment: ", e.what());
         throw std::runtime_error(error_message);
     }
 }
@@ -105,6 +121,7 @@ int main() {
         no_pixel_assign();
         write_comment();
         read_comment();
+        remove_comments();
 
     } catch(const std::exception& e) {
         std::cout << "[ERROR] " << e.what() << "\n";
