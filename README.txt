@@ -18,7 +18,8 @@ or
 
 
 Current version:
-v0.3
+v0.4
+Remove '#' from comments when read
 
 Status:
 v0.3

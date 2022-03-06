@@ -15,7 +15,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 #define RWPNM
 
 /*
-RWPNM v0.3
+RWPNM v0.4
 
 A drop-in library to work with PNM images
 */
@@ -66,6 +66,30 @@ public:
     }
 };
 
+
+// TODO
+// template<class T>
+// class PNM_image {
+// protected:
+//     std::string m_MAGIC_NUMBER;
+//     const char m_COMMENT_CHAR = '#';
+
+//     // image width and height
+//     uint32_t m_width;
+//     uint32_t m_height;
+
+//     // stored comments
+//     std::vector<std::string> m_comments;
+
+//     // actual pixel data
+//     std::vector<T> m_pixel_data;
+
+//     // returns 1-dimensional array index as if it was 2-dimensional array
+//     uint64_t index_at(uint32_t x, uint32_t y) {
+//         return m_width * y + x;
+//     }
+// public:
+// };
 
 // PPM image file format reader/writer
 class PPM {
@@ -126,12 +150,18 @@ public:
         m_comments.push_back(comment);
     }
 
+    // Removes the last read/added comment if present
     void remove_last_comment() {
-        m_comments.pop_back();
+        if (m_comments.size() > 0) {
+            m_comments.pop_back();
+        }
     }
 
+    // Removes all comments if present
     void remove_all_comments() {
-        m_comments.clear();
+        if (m_comments.size() > 0) {
+            m_comments.clear();
+        }
     }
 
     // Return all captured comments of an image
@@ -161,7 +191,7 @@ public:
             ppm_image_file >> entity;
             if (entity[0] == m_COMMENT_CHAR) {
                 // this is a comment
-                std::string comment = entity;
+                std::string comment = entity.erase(0, 1);
                 getline(ppm_image_file, entity);
                 comment += entity;
                 m_comments.push_back(comment);
@@ -195,7 +225,7 @@ public:
             if (one[0] == m_COMMENT_CHAR) {
                 // ah, comment again...
                 getline(ppm_image_file, entity);
-                m_comments.push_back(entity);
+                m_comments.push_back(entity.erase(0, 1));
             } else {
                 break;
             }
@@ -253,6 +283,14 @@ public:
         ppm_image_file.close();
     }
 };
+
+// TODO
+// class PBM {
+// protected:
+// public:
+//     PBM() {}
+//     ~PBM() {}
+// };
 
 }
 

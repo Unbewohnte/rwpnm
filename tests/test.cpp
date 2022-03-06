@@ -95,7 +95,7 @@ void remove_comments() {
     }
 }
 
-void read_comment() {
+void read_comment(bool print) {
     try {
         write_comment();
     
@@ -103,11 +103,16 @@ void read_comment() {
         image.read("result_image.ppm");
 
         std::vector<std::string> comments = image.get_comments();
-
         if (comments.size() == 0) {
             throw std::runtime_error("No comments found, though there should be");
         }
-        
+
+        if (print) {
+            for (const std::string& comment : comments) {
+                std::cout << comment << "\n";
+            }
+        }
+
     } catch(const std::exception& e) {
         std::string error_message("read_comment:", e.what());
         throw std::runtime_error(error_message);
@@ -120,7 +125,7 @@ int main() {
         green_rectangle_on_top_of_existing_image();
         no_pixel_assign();
         write_comment();
-        read_comment();
+        read_comment(false);
         remove_comments();
 
     } catch(const std::exception& e) {
