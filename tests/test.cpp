@@ -1,17 +1,17 @@
 #include <iostream>
-#include "../src/pnm.cpp"
+#include "../src/ppm.cpp"
 
 
 void make_test_img() {
     try {
-        pnm::PPM image;
+        ppm::PPM image;
         
         const uint32_t width = 512;
         const uint32_t height = 512;
 
         for (uint32_t y = 0; y < height; y++) {
             for (uint32_t x = 0; x < width; x++) {                
-                image.put_pixel(x, y, pnm::RGB(x / 2, y / 2, x / 2 + y / 2));
+                image.put_pixel(x, y, ppm::RGB(x / 2, y / 2, x / 2 + y / 2));
             }
         }
 
@@ -24,7 +24,7 @@ void make_test_img() {
 
 void green_rectangle_on_top_of_existing_image() {
     try {
-        pnm::PPM image;
+        ppm::PPM image;
         image.read("test_img512x512.ppm");
         // image.read("img.ppm");
 
@@ -33,7 +33,7 @@ void green_rectangle_on_top_of_existing_image() {
         
         for (uint32_t y = 0; y < rec_height; y++) {
             for (uint32_t x = 0; x < rec_width; x++) {
-                image.put_pixel(x, y, pnm::RGB(0, 255, 0));
+                image.put_pixel(x, y, ppm::RGB(0, 255, 0));
             }
         }
 
@@ -46,7 +46,7 @@ void green_rectangle_on_top_of_existing_image() {
 
 void no_pixel_assign() {
     try {
-        pnm::PPM image;
+        ppm::PPM image;
         image.save("result_image.ppm");
 
         std::string error_message("no_pixel_assign: should`ve gotten an error, but there weren`t any thrown");
@@ -56,14 +56,14 @@ void no_pixel_assign() {
 
 void write_comment() {
     try {
-        pnm::PPM image;
+        ppm::PPM image;
         
         const uint32_t width = 512;
         const uint32_t height = 512;
 
         for (uint32_t y = 0; y < height; y++) {
             for (uint32_t x = 0; x < width; x++) {                
-                image.put_pixel(x, y, pnm::RGB(x / 2, y / 2, x / 2 + y / 2));
+                image.put_pixel(x, y, ppm::RGB(x / 2, y / 2, x / 2 + y / 2));
             }
         }
 
@@ -81,7 +81,7 @@ void write_comment() {
 
 void remove_comments() {
     try {
-        pnm::PPM image;
+        ppm::PPM image;
         image.read("result_image.ppm");
         
         image.remove_last_comment();
@@ -99,7 +99,7 @@ void read_comment(bool print) {
     try {
         write_comment();
     
-        pnm::PPM image;
+        ppm::PPM image;
         image.read("result_image.ppm");
 
         std::vector<std::string> comments = image.get_comments();

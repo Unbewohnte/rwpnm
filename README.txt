@@ -1,4 +1,4 @@
-RWPNM - a one-file drop-in C++ library for working with PPM, PGM and PBM image formats.
+RWPPM - a one-file drop-in C++ library for working with PPM image format.
 
 
 --------------------------------------------------------------------------------------------
@@ -19,9 +19,11 @@ or
 
 Current version:
 v0.4
-Remove '#' from comments when read
 
 Status:
+v0.4
+Remove '#' from comments when read
+
 v0.3
 Comments are now read correctly; remove all comments at once
 

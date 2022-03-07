@@ -11,19 +11,19 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 */
 
 
-#ifndef RWPNM
-#define RWPNM
+#ifndef RWPPM
+#define RWPPM
 
 /*
-RWPNM v0.4
+RWPPM v0.4
 
-A drop-in library to work with PNM images
+A drop-in library to work with PPM images
 */
 
 #include <vector>
 #include <fstream>
 
-namespace pnm {;
+namespace ppm {;
 
 class RGB {
 public:
@@ -47,49 +47,6 @@ public:
         return false;
     }
 };
-
-class Grayscale {
-public:
-    Grayscale(uint8_t value = 0) {
-        intensity = value;
-    }
-    ~Grayscale() {}
-
-    uint8_t intensity;
-
-    bool operator==(const Grayscale& other) {
-        if (intensity == other.intensity) {
-            return true;
-        }
-
-        return false;
-    }
-};
-
-
-// TODO
-// template<class T>
-// class PNM_image {
-// protected:
-//     std::string m_MAGIC_NUMBER;
-//     const char m_COMMENT_CHAR = '#';
-
-//     // image width and height
-//     uint32_t m_width;
-//     uint32_t m_height;
-
-//     // stored comments
-//     std::vector<std::string> m_comments;
-
-//     // actual pixel data
-//     std::vector<T> m_pixel_data;
-
-//     // returns 1-dimensional array index as if it was 2-dimensional array
-//     uint64_t index_at(uint32_t x, uint32_t y) {
-//         return m_width * y + x;
-//     }
-// public:
-// };
 
 // PPM image file format reader/writer
 class PPM {
@@ -283,14 +240,6 @@ public:
         ppm_image_file.close();
     }
 };
-
-// TODO
-// class PBM {
-// protected:
-// public:
-//     PBM() {}
-//     ~PBM() {}
-// };
 
 }
 
