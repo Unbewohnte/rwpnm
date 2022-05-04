@@ -14,12 +14,6 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 #ifndef RWPPM
 #define RWPPM
 
-/*
-RWPPM v0.4
-
-A drop-in library to work with PPM images
-*/
-
 #include <vector>
 #include <fstream>
 

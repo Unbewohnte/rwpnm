@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../src/ppm.cpp"
+#include "../src/rwppm.cpp"
 
 
 void make_test_img() {
